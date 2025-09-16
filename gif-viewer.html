@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>GIF フレームビューア</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: sans-serif;
+        }
+
+        canvas {
+            max-width: 300px;
+            margin: 20px 0;
+            border: 1px solid #ccc;
+        }
+
+        input[type=range] {
+            width: 300px;
+        }
+
+        button,
+        select {
+            margin: 10px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>GIF フレームビューア (gifuct-js)</h2>
+    <input type="file" id="gifInput" accept="image/gif"><br>
+    <canvas id="canvas"></canvas><br>
+    <input id="slider" type="range" min="0" max="0" value="0"><br>
+    <button id="playPause">▶ 再生</button>
+    <label>
+        再生速度:
+        <select id="speed">
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="2">2x</option>
+        </select>
+    </label>
+
+    <!-- gifuct-js (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@fand/gifuct-js@1.0.0/dist/gifuct.min.js"></script>
+    <script>
+        const { parseGIF, decompressFrames } = window.gifuct; // ここ重要！
+
+        const fileInput = document.getElementById("gifInput");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const slider = document.getElementById("slider");
+        const playPauseBtn = document.getElementById("playPause");
+        const speedSelect = document.getElementById("speed");
+
+        let frames = [];
+        let playing = false;
+        let currentFrame = 0;
+        let playbackTimer = null;
+        let speed = 1;
+
+        fileInput.addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const arrayBuffer = await file.arrayBuffer();
+            const gif = parseGIF(arrayBuffer);                  // ✅ 修正
+            frames = decompressFrames(gif, true);               // ✅ 修正
+
+            // Canvasサイズをフレームに合わせる
+            canvas.width = frames[0].dims.width;
+            canvas.height = frames[0].dims.height;
+
+            slider.max = frames.length - 1;
+            slider.value = 0;
+            currentFrame = 0;
+            drawFrame(0);
+        });
+
+        slider.addEventListener("input", () => {
+            stopPlayback();
+            currentFrame = parseInt(slider.value);
+            drawFrame(currentFrame);
+        });
+
+        playPauseBtn.addEventListener("click", () => {
+            if (playing) {
+                stopPlayback();
+            } else {
+                startPlayback();
+            }
+        });
+
+        speedSelect.addEventListener("change", () => {
+            speed = parseFloat(speedSelect.value);
+        });
+
+        function drawFrame(index) {
+            const frame = frames[index];
+            if (!frame) return;
+
+            const imageData = ctx.createImageData(frame.dims.width, frame.dims.height);
+            imageData.data.set(frame.patch);
+            ctx.putImageData(imageData, 0, 0);
+            slider.value = index;
+        }
+
+        function startPlayback() {
+            playing = true;
+            playPauseBtn.textContent = "⏸ 一時停止";
+            playNextFrame();
+        }
+
+        function stopPlayback() {
+            playing = false;
+            playPauseBtn.textContent = "▶ 再生";
+            if (playbackTimer) {
+                clearTimeout(playbackTimer);
+                playbackTimer = null;
+            }
+        }
+
+        function playNextFrame() {
+            drawFrame(currentFrame);
+
+            const delay = frames[currentFrame].delay * 10; // 1単位=10ms
+            const adjustedDelay = delay / speed;
+
+            currentFrame = (currentFrame + 1) % frames.length;
+
+            if (playing) {
+                playbackTimer = setTimeout(playNextFrame, adjustedDelay);
+            }
+        }
+    </script>
+</body>
+
+</html>
