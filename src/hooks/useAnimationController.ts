@@ -31,8 +31,7 @@ export function useAnimationController({
     loop: true,
   });
 
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastFrameTimeRef = useRef<number>(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // GIF情報が変わったときにリセット
   useEffect(() => {
