@@ -1,69 +1,88 @@
-# React + TypeScript + Vite
+# 🎬 GIF フレームビューア
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> GIFアニメーションをフレーム単位で確認・再生できるWebアプリケーション
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-19.1.1-61dafb?style=flat-square&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-3178c6?style=flat-square&logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-7.1.2-646cff?style=flat-square&logo=vite)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1.13-06b6d4?style=flat-square&logo=tailwindcss)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ 主な機能
 
-## Expanding the ESLint configuration
+- 📁 **ファイル読み込み** - ドラッグ&ドロップまたはクリックでGIF選択
+- 🎞️ **フレーム分解** - GIFを個別フレームに分解して表示
+- ⏯️ **再生制御** - 再生/停止・速度変更・ループ設定
+- 📊 **タイムライン** - スライダーで任意のフレームへ瞬時に移動
+- ⌨️ **キーボード操作** - ショートカットキーで快適な操作
+- 📈 **メタデータ表示** - GIF情報・統計・プリレンダリング進捗
+- 🖼️ **透明背景対応** - チェッカーパターンで透明部分を可視化
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 クイックスタート
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# 依存関係のインストール
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 開発サーバーの起動
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+ブラウザで `http://localhost:5173` を開いて、GIFファイルをドラッグ&ドロップしてください！
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ⌨️ キーボードショートカット
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| キー | 機能 |
+|------|------|
+| `Space` | ▶️ 再生/停止 |
+| `←` / `→` | ⏪ 前/次フレーム |
+| `Shift + ←/→` | ⏪ 10フレーム移動 |
+| `Home` / `End` | ⏮️ 最初/最後のフレーム |
+
+## 🔧 技術スタック
+
+- **React 19** + **TypeScript** - モダンなUI開発
+- **Vite** - 高速な開発サーバーとビルドツール
+- **Tailwind CSS** - ユーティリティファーストなCSS
+- **gifuct-js** - 高性能なGIFデコードライブラリ
+
+## 📂 プロジェクト構造
+
+```
+src/
+├── components/          # UIコンポーネント
+│   ├── FileDropZone.tsx    # ファイル選択
+│   ├── GifCanvas.tsx       # キャンバス表示
+│   ├── PlaybackControls.tsx # 再生制御
+│   ├── Timeline.tsx        # タイムライン
+│   └── MetadataPanel.tsx   # 情報パネル
+├── hooks/              # カスタムフック
+│   ├── useGifDecoder.ts    # GIFデコード
+│   ├── useGifRenderer.ts   # レンダリング
+│   └── useAnimationController.ts # アニメーション制御
+├── lib/                # ライブラリ
+│   ├── gif-compositor.ts   # フレーム合成
+│   └── gif-types.ts        # 型定義
+└── types/              # 外部ライブラリ型定義
+    └── gifuct-js.d.ts
+```
+
+## 🎯 特徴
+
+### 🔥 高性能レンダリング
+- **プリレンダリング**: 全フレームを事前合成してスムーズなスクラブ
+- **ImageBitmap**: GPU最適化された画像処理
+- **Disposal Method対応**: GIF仕様に準拠した正確な描画
+
+### 🎨 モダンなUI/UX
+- **レスポンシブデザイン**: モバイル・デスクトップ対応
+- **アニメーション**: スムーズなトランジション
+- **アクセシビリティ**: キーボード操作とスクリーンリーダー対応
+
+## 📋 npm スクリプト
+
+```bash
+npm run dev      # 開発サーバー起動
+npm run build    # プロダクションビルド
+npm run preview  # ビルド結果をプレビュー
+npm run lint     # ESLintでコードチェック
 ```
